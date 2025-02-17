@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/crons/resetHabits",
+      "schedule": "0 0 * * *",
+      "timezone": "Turkey" ,
+      "headers": {
+        "Authorization": `Bearer ${process.env.CRON_SECRET}`
+      }
+    }
+  ]
+}

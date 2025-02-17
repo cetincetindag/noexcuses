@@ -9,8 +9,6 @@ const Page = async () => {
 
   const username = userService.returnUsername(userId)
 
-
-
   return (
     <div>
       Hello, {username}

@@ -1,23 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userService } from "~/services/user";
-import { userDataSchema } from "~/types/user";
 import { z } from "zod";
 
-export async function POST(request: NextRequest) {
+export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = userDataSchema.parse(body);
-
-    const usernameExists = await userService.checkUsernameExists(validatedData.username);
-    if (usernameExists) {
-      return NextResponse.json(
-        { error: "Username already exists" },
-        { status: 409 }
-      );
-    }
-
-    console.log(validatedData);
-    const user = await userService.createUser(validatedData);
+    const user = await userService.deleteUser(body.userId);
     return NextResponse.json(user, { status: 201 });
 
   } catch (error) {
@@ -34,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("Error creating user:", error);
+    console.error("Error deleting user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

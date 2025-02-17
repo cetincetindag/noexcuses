@@ -39,12 +39,14 @@ model StartData {
 }
 
 model Habit {
-  id             Int       @id @default(autoincrement())
-  title          String
-  units          HabitUnit
-  customUnit     String
-  amountRequired Int
-  amountDone     Int
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               Int       @id @default(autoincrement())
+  title            String
+  units            HabitUnit
+  customUnit       String
+  amountRequired   Int
+  amountDone       Int
+  dailyStreak      Int       @default(0)
+  isCompletedToday Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }

@@ -3,6 +3,7 @@ import { userDataType } from '~/types/user';
 import { clerkClient } from '@clerk/nextjs/server';
 
 class UserService {
+
   async checkUsernameExists(username: string) {
     const existingUser = await db.user.findUnique({
       where: { username },
@@ -41,6 +42,7 @@ class UserService {
     });
   }
 
+
   async deleteUser(userId: string) {
     try {
       const client = await clerkClient();
@@ -53,6 +55,17 @@ class UserService {
     } catch (e) {
       console.error("Failed to delete user: ", e)
     }
+  }
+
+  async updateUser(userId: string, data: Object) {
+    return await db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        ...data
+      }
+    })
   }
 }
 

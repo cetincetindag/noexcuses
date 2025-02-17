@@ -3,7 +3,7 @@ import { userService } from "~/services/user";
 import { userDataSchema } from "~/types/user";
 import { z } from "zod";
 
-export async function POST(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
     const validatedData = userDataSchema.parse(body);
@@ -41,3 +41,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
