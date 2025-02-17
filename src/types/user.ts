@@ -5,19 +5,20 @@ export const heightUnitsEnum = z.enum(["in", "cm"])
 
 export const startDataSchema = z.object(
   {
-    dailyWaterIntake: z.number().max(2),
-    dailyCardio: z.number().max(3),
-    dailyWeightTraining: z.number().max(3),
-    dailyMeditation: z.number().max(3),
+    dailyWaterIntake: z.number().max(30),
+    dailyCardio: z.number().max(1440),
+    dailyWeightTraining: z.number().max(1440),
+    dailyMeditation: z.number().max(1440),
   })
 
 
 export const userDataSchema = z.object({
   username: z.string().min(5).max(16),
+  clerkId: z.string(),
   weightUnit: weightUnitsEnum,
   heightUnit: heightUnitsEnum,
-  weight: z.number().max(3),
-  height: z.number().max(3),
+  weight: z.number().max(999),
+  height: z.number().max(999),
   startData: startDataSchema,
 })
 

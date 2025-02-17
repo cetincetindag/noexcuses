@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log(validatedData);
     const user = await userService.createUser(validatedData);
     return NextResponse.json(user, { status: 201 });
 

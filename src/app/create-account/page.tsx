@@ -2,8 +2,14 @@
 
 import { useState, useCallback } from "react";
 import * as types from "~/types/user";
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import { completeOnboarding } from './_actions'
+
 
 const Page = () => {
+  const router = useRouter();
+  const { user } = useUser();
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [weightUnit, setWeightUnit] = useState<types.weightUnitType>("kg");
@@ -16,9 +22,17 @@ const Page = () => {
   const [userData, setUserData] = useState<types.userDataType>();
   const [isSecondPage, setIsSecondPage] = useState(false);
 
+
   const handleSubmit = useCallback(async () => {
+
+    if (!user?.id) {
+      console.error("Error: User ID is missing.");
+      return;
+    }
+
     const userData: types.userDataType = {
       username,
+      clerkId: user?.id,
       weightUnit,
       heightUnit,
       weight: Number(weight),
@@ -38,9 +52,14 @@ const Page = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization"
         },
         body: JSON.stringify(userData),
       });
+
+      console.log("user data before response: ", JSON.stringify(userData))
 
       if (!response.ok) {
         throw new Error("response not ok");
@@ -48,14 +67,24 @@ const Page = () => {
 
       const result = await response.json();
       console.log("Success! :", result);
+      router.push('/');
+
+
     } catch (e) {
       console.error("Error..:", e);
     }
   }, [username, weightUnit, heightUnit, weight, height, dailyWeightTraining, dailyCardio, dailyMeditation, dailyWaterIntake]);
 
   const handleNext = useCallback(() => {
+
+    if (!user?.id) {
+      console.error("Error: User ID is missing.");
+      return;
+    }
+
     const initialUserData: types.userDataType = {
       username,
+      clerkId: user?.id,
       weightUnit,
       heightUnit,
       weight: Number(weight),

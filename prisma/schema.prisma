@@ -17,6 +17,7 @@ enum HabitUnit {
 
 model User {
   id         String     @id @default(cuid())
+  clerkId    String     @unique
   username   String     @unique
   weight     Float
   height     Float
