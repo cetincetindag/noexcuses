@@ -1,6 +1,3 @@
-
-import { habitDataType } from "~/types/habit";
-
 export const renderHabit = (habits: any) => {
   console.log("HABITS FROM RENDERER", habits);
 
