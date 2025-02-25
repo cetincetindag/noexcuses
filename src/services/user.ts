@@ -67,6 +67,17 @@ class UserService {
       }
     })
   }
+
+  async getHabitsOfUser(userId: string) {
+    return db.user.findUnique({
+      where: {
+        id: userId
+      },
+      select: {
+        habits: true
+      }
+    })
+  }
 }
 
 export const userService = new UserService();

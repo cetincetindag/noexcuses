@@ -19,6 +19,7 @@ model User {
   id         String     @id @default(cuid())
   clerkId    String     @unique
   username   String     @unique
+  habits     Habit[]
   weight     Float
   height     Float
   weightUnit String
@@ -49,4 +50,6 @@ model Habit {
   isCompletedToday Boolean   @default(false)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  User             User?     @relation(fields: [userId], references: [id])
+  userId           String?
 }

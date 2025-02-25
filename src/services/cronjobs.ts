@@ -1,4 +1,3 @@
-
 class HabitCronService {
   async resetHabits() {
     fetch('/api/crons/resetHabits', {
