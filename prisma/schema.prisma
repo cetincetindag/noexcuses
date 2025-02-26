@@ -42,6 +42,8 @@ model StartData {
 model Habit {
   id               Int       @id @default(autoincrement())
   title            String
+  category         String    @default("General")
+  categoryId       Int       @default(autoincrement())
   units            HabitUnit
   customUnit       String
   amountRequired   Int
