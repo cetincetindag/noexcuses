@@ -115,7 +115,7 @@ const Page = () => {
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -127,14 +127,14 @@ const Page = () => {
             type="number"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 flex-1"
           />
           <select
             value={weightUnit}
             onChange={(e) =>
               setWeightUnit(e.target.value as types.weightUnitType)
             }
-            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           >
             <option value="kg">kg</option>
             <option value="lb">lb</option>
@@ -150,14 +150,14 @@ const Page = () => {
             type="number"
             value={height}
             onChange={(e) => setHeight(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 flex-1"
           />
           <select
             value={heightUnit}
             onChange={(e) =>
               setHeightUnit(e.target.value as types.heightUnitType)
             }
-            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           >
             <option value="cm">cm</option>
             <option value="in">in</option>
@@ -168,7 +168,7 @@ const Page = () => {
       {/* Next Button */}
       <button
         type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
       >
         Next
       </button>
@@ -190,7 +190,7 @@ const Page = () => {
           type="number"
           value={dailyCardio}
           onChange={(e) => setDailyCardio(e.target.value)}
-          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -201,7 +201,7 @@ const Page = () => {
           type="number"
           value={dailyWeightTraining}
           onChange={(e) => setDailyWeightTraining(e.target.value)}
-          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -212,7 +212,7 @@ const Page = () => {
           type="number"
           value={dailyMeditation}
           onChange={(e) => setDailyMeditation(e.target.value)}
-          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -223,14 +223,14 @@ const Page = () => {
           type="number"
           value={dailyWaterIntake}
           onChange={(e) => setDailyWaterIntake(e.target.value)}
-          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-1 p-2 border border-gray-300 bg-black rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
       >
         Submit
       </button>

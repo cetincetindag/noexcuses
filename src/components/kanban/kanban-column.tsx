@@ -16,7 +16,7 @@ export function KanbanColumn({ title, color, tasks, goals }: KanbanColumnProps) 
   const sortedGoals = [...goals].sort((a, b) => a.priority - b.priority)
 
   return (
-    <Card className="kanban-column flex-shrink-0">
+    <Card className="kanban-column shrink-0">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-medium">{title}</CardTitle>

@@ -34,7 +34,7 @@ export function HabitItem({ habit, index }: HabitItemProps) {
           <CardContent className="p-4 flex items-center space-x-4">
             <Checkbox id={`habit-${habit.id}`} checked={habit.completed} />
             {Icon && <Icon className="h-5 w-5" />}
-            <div className="flex-grow">
+            <div className="grow">
               <label
                 htmlFor={`habit-${habit.id}`}
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
