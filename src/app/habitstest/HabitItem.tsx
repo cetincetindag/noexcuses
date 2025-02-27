@@ -1,3 +1,5 @@
+
+
 import { Draggable } from "@hello-pangea/dnd"
 import { Card, CardContent } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
@@ -48,6 +50,4 @@ export function HabitItem({ habit, index }: HabitItemProps) {
     </Draggable>
   )
 }
-
-
 

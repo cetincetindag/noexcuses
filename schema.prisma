@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum HabitUnit {
+  NONE
+  MINUTES
+  HOURS
+  TIMES
+  CUSTOM
+}
+
+model User {
+  id         String     @id @default(cuid())
+  clerkId    String     @unique
+  username   String     @unique
+  habits     Habit[]
+  weight     Float
+  height     Float
+  weightUnit String
+  heightUnit String
+  startData  StartData?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model StartData {
+  id                  String @id @default(cuid())
+  userId              String @unique
+  user                User   @relation(fields: [userId], references: [id])
+  dailyWeightTraining Float
+  dailyCardio         Float
+  dailyMeditation     Float
+  dailyWaterIntake    Float
+}
+
+model Habit {
+  id               Int       @id @default(autoincrement())
+  title            String
+  category         String    @default("General")
+  units            HabitUnit
+  customUnit       String
+  amountRequired   Int
+  amountDone       Int
+  dailyStreak      Int       @default(0)
+  isCompletedToday Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  userId           String?
+  User             User?     @relation(fields: [userId], references: [id])
+} 

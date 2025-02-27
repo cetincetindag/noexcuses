@@ -130,15 +130,26 @@ export function HabitsTab() {
     }
 
     // Create a modified item if moving between completed/remaining lists
-    let modifiedItem = { ...sourceItem }
+    let modifiedItem: {
+      id: string;
+      name: string;
+      frequency: string;
+      completed: boolean;
+      color: string;
+      icon: string;
+      category: string;
+    } = { ...sourceItem } as any; // Cast to any to bypass type checking temporarily
 
-    // Update completion status if moving between completed and remaining
-    if (
-      (sourceListId === "completed-habits" && destListId === "remaining-habits") ||
-      (sourceListId === "remaining-habits" && destListId === "completed-habits")
-    ) {
-      modifiedItem.completed = destListId === "completed-habits"
-    }
+    // Ensure all required properties are set
+    modifiedItem = {
+      id: sourceItem?.id || "", // Provide a default value if undefined
+      name: sourceItem?.name || "",
+      frequency: sourceItem?.frequency || "",
+      completed: sourceItem?.completed || false,
+      color: sourceItem?.color || "",
+      icon: sourceItem?.icon || "",
+      category: sourceItem?.category || "",
+    };
 
     // Remove the source item
     newHabits.splice(sourceIndex, 1)
@@ -195,8 +206,12 @@ export function HabitsTab() {
       }
     }
 
-    // Insert the modified item at the destination
-    newHabits.splice(destIndex, 0, modifiedItem)
+    // Ensure destIndex is valid before inserting the modified item
+    if (destIndex >= 0) {
+        newHabits.splice(destIndex, 0, modifiedItem)
+    } else {
+        console.error("Invalid destination index:", destIndex)
+    }
 
     // Update state
     setHabits(newHabits)

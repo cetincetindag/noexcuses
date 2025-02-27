@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #0c0c0e;
+    --card: #ffffff;
+    --card-foreground: #0c0c0e;
+    --popover: #ffffff;
+    --popover-foreground: #0c0c0e;
+    --primary: #18181b;
+    --primary-foreground: #fafafa;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #18181b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #18181b;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #18181b;
+    --radius: 0.5rem;
+
+    /* Category Colors */
+    --health: #3498db;
+    --fitness: #e74c3c;
+    --mindfulness: #9b59b6;
+    --work: #34495e;
+    --personal: #2ecc71;
+    --education: #f39c12;
+    --finance: #f1c40f;
+    --home: #795548;
+    --social: #e91e63;
+    --creativity: #1abc9c;
+    --technology: #003366;
+    --travel: #87ceeb;
+    --family: #d7bde2;
+    --nutrition: #cddc39;
+    --self-care: #ffcba4;
+  }
+
+  .dark {
+    --background: oklch(0.21 0.006 285.885);
+    --foreground: #fafafa;
+    --card: oklch(0.25 0.006 285.885);
+    --card-foreground: #fafafa;
+    --popover: oklch(0.25 0.006 285.885);
+    --popover-foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #18181b;
+    --secondary: #27272a;
+    --secondary-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #d4d4d8;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.animate-in {
+  animation: animateIn 0.3s ease-in-out;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.kanban-column {
+  min-width: 300px;
+  max-width: 300px;
+}
+
+.kanban-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 1rem;
+}
+
+.kanban-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.kanban-container::-webkit-scrollbar-track {
+  background: var(--secondary);
+  border-radius: 4px;
+}
+
+.kanban-container::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+

@@ -1,32 +1,29 @@
-import { ClerkProvider } from '@clerk/nextjs'
+import type React from "react"
+import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "~/components/theme-provider"
 
-import "~/styles/globals.css";
-
-import { GeistSans } from "geist/font/sans";
-import { type Metadata } from "next";
-
-import { Header } from '~/components/layout/header';
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "noexcuses",
-  description: "no excuses.",
-};
+  title: "TaskTrack Pro",
+  description: "Comprehensive task and goal tracking application",
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${GeistSans.variable}`}>
-        <body className="flex flex-col min-h-screen bg-black text-white">
-          <div>
-            <Header />
-          </div>
-          <div>
-            {children}
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
-  );
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
 }
+

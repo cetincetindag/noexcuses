@@ -46,3 +46,8 @@ yarn-error.log*
 .idea
 # clerk configuration (can include secrets)
 /.clerk/
+
+# cursor files
+/.cursorrules
+/.cursor
+/.cursorignore
