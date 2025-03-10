@@ -3,9 +3,49 @@
     {
       "path": "/api/crons/resetHabits",
       "schedule": "0 0 * * *",
-      "timezone": "Turkey" ,
+      "timezone": "Turkey",
       "headers": {
-        "Authorization": `Bearer ${process.env.CRON_SECRET}`
+        "Authorization": "Bearer @CRON_SECRET"
+      }
+    },
+    {
+      "path": "/api/crons/updateStreaks",
+      "schedule": "5 0 * * *",
+      "timezone": "Turkey",
+      "headers": {
+        "Authorization": "Bearer @CRON_SECRET"
+      }
+    },
+    {
+      "path": "/api/crons/resetDailyAnalytics",
+      "schedule": "0 0 * * *",
+      "timezone": "Turkey",
+      "headers": {
+        "Authorization": "Bearer @CRON_SECRET"
+      }
+    },
+    {
+      "path": "/api/crons/resetWeeklyAnalytics",
+      "schedule": "0 0 * * 1",
+      "timezone": "Turkey",
+      "headers": {
+        "Authorization": "Bearer @CRON_SECRET"
+      }
+    },
+    {
+      "path": "/api/crons/resetMonthlyAnalytics",
+      "schedule": "0 0 1 * *",
+      "timezone": "Turkey",
+      "headers": {
+        "Authorization": "Bearer @CRON_SECRET"
+      }
+    },
+    {
+      "path": "/api/crons/resetRoutines",
+      "schedule": "10 0 * * *",
+      "timezone": "Turkey",
+      "headers": {
+        "Authorization": "Bearer @CRON_SECRET"
       }
     }
   ]

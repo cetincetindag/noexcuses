@@ -1,19 +1,23 @@
-import { z } from 'zod';
-import { HabitUnit } from '@prisma/client';
+import { z } from "zod";
 
+// Define the Habit schema for validation
+export const HabitSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  userId: z.string().min(1),
+  categoryId: z.string().min(1),
+  targetCompletions: z.number().int().min(1).default(1),
+  active: z.boolean().default(true),
+  isCompletedToday: z.boolean().default(false),
+  dailyStreak: z.number().int().min(0).default(0),
+  lastCompletedAt: z.date().nullable().optional(),
+  completedToday: z.number().int().min(0).default(0),
+  color: z.string().optional(),
+  longestStreak: z.number().int().min(0).default(0),
+  order: z.number().int().min(0).default(0),
+});
 
-const habitSchema = z.object({
-  id: z.number().optional(),
-  title: z.string(),
-  category: z.string().default("General"),
-  units: z.nativeEnum(HabitUnit),
-  customUnit: z.string().optional(),
-  amountRequired: z.number(),
-  amountDone: z.number(),
-  dailyStreak: z.number().optional(),
-  isCompletedToday: z.boolean().optional(),
-  userId: z.string(),
-})
+// Add the .partial() method to the schema
+HabitSchema.partial = () => HabitSchema.extend({}).partial();
 
-
-export type habitDataType = z.infer<typeof habitSchema>;
+export type HabitType = z.infer<typeof HabitSchema>;

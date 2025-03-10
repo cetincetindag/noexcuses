@@ -7,51 +7,154 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum HabitUnit {
-  NONE
-  MINUTES
-  HOURS
-  TIMES
-  CUSTOM
+enum Frequency {
+  ONCE
+  DAILY
+  WEEKLY
+  MONTHLY
 }
 
 model User {
-  id         String     @id @default(cuid())
-  clerkId    String     @unique
-  username   String     @unique
-  habits     Habit[]
-  weight     Float
-  height     Float
-  weightUnit String
-  heightUnit String
-  startData  StartData?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  clerkId           String      @id @unique
+  databaseId        String      @unique @default(cuid())
+  username          String      @unique
+  tasks             Task[]     
+  goals             Goal[]     
+  habits            Habit[]     
+  routines          Routine[]   
+  categories        Category[] 
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
+  lastLogin         DateTime?
+  analyticsData     Json?       
+  tutorialComplete  Boolean     @default(false)
+
+  @@index([clerkId])
+  @@index([databaseId])
 }
 
-model StartData {
-  id                  String @id @default(cuid())
-  userId              String @unique
-  user                User   @relation(fields: [userId], references: [id])
-  dailyWeightTraining Float
-  dailyCardio         Float
-  dailyMeditation     Float
-  dailyWaterIntake    Float
+model Task {
+  id               String      @id @default(cuid())
+  title            String
+  description      String?
+  priority         Int         @default(0)
+  frequency        Frequency   @default(ONCE)
+  order            Int         @default(0)
+  completed        Boolean     @default(false)
+  isCompletedToday Boolean     @default(false)  
+  lastCompletedAt  DateTime?  
+  dailyStreak      Int         @default(0)
+  weeklyStreak     Int         @default(0)      
+  monthlyStreak    Int         @default(0)      
+  categoryId       String
+  category         Category    @relation(fields: [categoryId], references: [id])
+  userId           String
+  user             User        @relation(fields: [userId], references: [clerkId])
+  Goal             Goal[]
+  repeatConfig     Json?       
+  nextDueDate      DateTime?   
+  isRecurring      Boolean     @default(false)
+  dueDate          DateTime?   
+  routines         Routine[]   
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @default(now()) @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
 }
 
 model Habit {
-  id               Int       @id @default(autoincrement())
+  id               String      @id @default(cuid())
   title            String
-  category         String    @default("General")
-  categoryId       Int       @default(autoincrement())
-  units            HabitUnit
-  customUnit       String
-  amountRequired   Int
-  amountDone       Int
-  dailyStreak      Int       @default(0)
-  isCompletedToday Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  User             User?     @relation(fields: [userId], references: [id])
-  userId           String?
+  description      String?
+  targetCompletions Int        @default(1)    
+  completedToday   Int         @default(0)    
+  isCompletedToday Boolean     @default(false)
+  active           Boolean     @default(true)
+  dailyStreak      Int         @default(0)    
+  longestStreak    Int         @default(0)    
+  categoryId       String
+  category         Category    @relation(fields: [categoryId], references: [id])
+  userId           String
+  user             User        @relation(fields: [userId], references: [clerkId])
+  lastCompletedAt  DateTime?
+  order            Int         @default(0)
+  color            String?
+  routines         Routine[]   
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @default(now()) @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model Routine {
+  id               String      @id @default(cuid())
+  title            String
+  description      String?
+  frequency        Frequency   @default(DAILY)
+  isCompletedToday Boolean     @default(false)
+  streak           Int         @default(0)
+  lastCompletedAt  DateTime?
+  color            String?
+  categoryId       String
+  category         Category    @relation(fields: [categoryId], references: [id])
+  userId           String
+  user             User        @relation(fields: [userId], references: [clerkId])
+  tasks            Task[]     
+  habits           Habit[]    
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @default(now()) @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model Goal {
+  id               String      @id @default(cuid())
+  title            String
+  description      String?
+  priority         Int          @default(0)
+  taskId           String?
+  task             Task?        @relation(fields: [taskId], references: [id])
+  frequency        Frequency    @default(ONCE)
+  categoryId       String
+  category         Category     @relation(fields: [categoryId], references: [id])
+  userId           String
+  user             User         @relation(fields: [userId], references: [clerkId])
+  order            Int?         @default(0)
+  progress         Int
+  total            Int
+  completed        Boolean      @default(false)
+  isCompletedToday Boolean      @default(false)  
+  lastCompletedAt  DateTime?   
+  dailyStreak      Int          @default(0)
+  weeklyStreak     Int          @default(0)      
+  monthlyStreak    Int          @default(0)     
+  dueDate          DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now()) @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String
+  color       String
+  icon        String
+  description String?
+  priority    Int          @default(0)
+  order       Int          @default(0)
+  tasks       Task[]
+  goals       Goal[]
+  habits      Habit[]     
+  routines    Routine[]   
+  userId      String
+  user        User         @relation(fields: [userId], references: [clerkId])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
+
+  @@index([userId])
 }

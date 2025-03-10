@@ -1,0 +1,231 @@
+/* Custom calendar styles */
+.custom-head-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.custom-head-cell {
+  width: 2.5rem !important;
+  text-align: center !important;
+  color: var(--muted-foreground) !important;
+  font-size: 0.8rem !important;
+  font-weight: normal !important;
+  padding: 4px !important;
+}
+
+.custom-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-top: 8px !important;
+}
+
+/* Direct targeting of react-day-picker elements */
+.rdp-head_row,
+.rdp-head-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-bottom: 8px !important;
+}
+
+.rdp-head_cell,
+.rdp-head-cell {
+  width: 2.5rem !important;
+  text-align: center !important;
+  font-size: 0.8rem !important;
+  font-weight: normal !important;
+  color: var(--muted-foreground) !important;
+}
+
+.rdp-row,
+.rdp-tbody tr {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+
+.rdp-cell,
+.rdp-tbody td {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0 !important;
+  text-align: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.rdp-day,
+.rdp-button {
+  width: 2.2rem !important;
+  height: 2.2rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Table layout */
+.rdp-table,
+.rdp table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Additional selector for better specificity */
+.rdp-months .rdp-month .rdp-table .rdp-head .custom-head-row .custom-head-cell {
+  width: 100%;
+  text-align: center;
+  padding: 4px;
+}
+
+/* Force equal spacing in the calendar */
+.rdp-day,
+.rdp-cell {
+  width: 100% !important;
+}
+
+/* Calendar CSS fixes */
+
+/* Reset any existing spacing that might be causing issues */
+.rdp-head_row,
+.rdp-head-row,
+.rdp-head,
+.rdp thead,
+.rdp-month tbody:first-child tr:first-child {
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  white-space: normal !important;
+}
+
+/* Fix specific issues with day header cells (abbr tags) */
+.rdp-head_cell abbr,
+.rdp-head-cell abbr,
+.rdp th abbr {
+  padding: 0 !important;
+  width: 24px !important;
+  display: inline-block !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+}
+
+/* Force each day header to be separate */
+.rdp-head_cell,
+.rdp-head-cell,
+.rdp th {
+  padding: 4px !important;
+  width: 36px !important;
+  text-align: center !important;
+  font-size: 0.8rem !important;
+  font-weight: normal !important;
+  box-sizing: border-box !important;
+  display: table-cell !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+}
+
+/* Target the table to ensure normal table behavior */
+.rdp-table,
+.rdp table {
+  table-layout: fixed !important;
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Apply grid layout to the day header row */
+.rdp-head_row,
+.rdp-head-row,
+.rdp-month tbody:first-child tr:first-child,
+.rdp thead tr,
+.day-header-row {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 2px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Day header cells */
+.day-header-cell {
+  text-align: center !important;
+  font-size: 0.8rem !important;
+  font-weight: normal !important;
+  color: var(--muted-foreground) !important;
+  padding: 4px !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Calendar wrapper */
+.calendar-wrapper {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Calendar rows for dates */
+.rdp-row,
+.rdp-tbody tr,
+.rdp tbody tr,
+.day-row {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 2px !important;
+  width: 100% !important;
+  margin-top: 2px !important;
+  box-sizing: border-box !important;
+}
+
+/* Calendar cells */
+.rdp-cell,
+.rdp-tbody td,
+.rdp td {
+  box-sizing: border-box !important;
+  width: auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+/* Calendar days */
+.rdp-day,
+.rdp-button,
+.rdp button {
+  box-sizing: border-box !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Table layout */
+.rdp-table,
+.rdp table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Day header row */
+.rdp-head_row,
+.rdp-head-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}

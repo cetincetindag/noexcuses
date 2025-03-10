@@ -1,7 +1,11 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
+import { userService } from "~/services/user";
+import HomePage from "~/components/landing-page";
 
-export default function Home() {
-  // Redirect to dashboard
-  redirect("/dashboard")
+export default async function Home() {
+  const user = await userService.getCurrentUser();
+  if (user) {
+    redirect("/dashboard");
+  }
+  return <HomePage />;
 }
-

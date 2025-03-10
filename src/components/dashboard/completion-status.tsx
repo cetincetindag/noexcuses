@@ -1,54 +1,89 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
-import { getCompletionData } from "~/lib/utils"
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import type { Task, Habit } from "~/lib/utils";
+import { Progress } from "~/components/ui/progress";
 
-export function CompletionStatus() {
-  const completionData = getCompletionData()
+interface CompletionStatusProps {
+  tasks: Task[];
+  habits?: Habit[];
+}
 
-  const dailyData = completionData.daily.map((value, index) => ({
-    name: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][index],
-    value,
-  }))
+export function CompletionStatus({
+  tasks,
+  habits = [],
+}: CompletionStatusProps) {
+  // Calculate task percentages
+  const completedTasks = tasks.filter((task) => task.completed);
+  const taskCompletionPercentage = tasks.length
+    ? Math.round((completedTasks.length / tasks.length) * 100)
+    : 0;
 
-  const weeklyData = completionData.weekly.map((value, index) => ({
-    name: `Week ${index + 1}`,
-    value,
-  }))
+  // Calculate habit percentages
+  const activeHabits = habits.filter((habit) => habit.active);
+  const completedHabits = habits.filter((habit) => habit.isCompletedToday);
+  const habitCompletionPercentage = activeHabits.length
+    ? Math.round((completedHabits.length / activeHabits.length) * 100)
+    : 0;
+
+  // Calculate overall percentages including both tasks and habits
+  const totalItems = tasks.length + activeHabits.length;
+  const totalCompleted = completedTasks.length + completedHabits.length;
+  const overallCompletionPercentage = totalItems
+    ? Math.round((totalCompleted / totalItems) * 100)
+    : 0;
 
   return (
-    <Card className="col-span-1">
+    <Card>
       <CardHeader>
         <CardTitle>Completion Status</CardTitle>
-        <CardDescription>Your task completion over time</CardDescription>
+        <CardDescription>
+          Your current progress on tasks and habits
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dailyData}>
-              <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}`}
-              />
-              <Tooltip
-                cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  borderColor: "hsl(var(--border))",
-                }}
-                labelStyle={{ color: "hsl(var(--card-foreground))" }}
-              />
-              <Bar dataKey="value" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      <CardContent className="flex flex-col gap-4">
+        <div>
+          <div className="flex items-center justify-between pb-2">
+            <span className="text-sm font-medium">Overall</span>
+            <span className="text-muted-foreground text-sm">
+              {overallCompletionPercentage}%
+            </span>
+          </div>
+          <Progress value={overallCompletionPercentage} className="h-2" />
+        </div>
+        <div>
+          <div className="flex items-center justify-between pb-2">
+            <span className="text-sm font-medium">Tasks</span>
+            <span className="text-muted-foreground text-sm">
+              {taskCompletionPercentage}%
+            </span>
+          </div>
+          <Progress value={taskCompletionPercentage} className="h-2" />
+        </div>
+        <div>
+          <div className="flex items-center justify-between pb-2">
+            <span className="text-sm font-medium">Habits</span>
+            <span className="text-muted-foreground text-sm">
+              {habitCompletionPercentage}%
+            </span>
+          </div>
+          <Progress value={habitCompletionPercentage} className="h-2" />
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-
