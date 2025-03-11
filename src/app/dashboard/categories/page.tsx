@@ -22,33 +22,36 @@ export default function CategoriesPage() {
   const [pagination, setPagination] = useState<PaginationInfo>({
     total: 0,
     page: 1,
-    limit: 8,
+    limit: 16,
     totalPages: 1,
   });
 
   // Calculate appropriate limit based on screen size
   const calculateLimit = useCallback(() => {
-    // Default to 8 cards (4x2 grid on large screens)
-    let limit = 8;
+    // Default to 16 cards (4x4 grid on large screens)
+    let limit = 16;
 
     // Adjust based on viewport width
     if (typeof window !== "undefined") {
       const width = window.innerWidth;
       if (width >= 1440) {
-        // 2xl: 5 columns, so 10 items (5x2)
-        limit = 10;
+        // 2xl: 8 columns, so 16 items (8x2)
+        limit = 16;
+      } else if (width >= 1280) {
+        // xl: 6 columns, so 18 items (6x3)
+        limit = 18;
       } else if (width >= 1024) {
-        // lg: 4 columns, so 8 items (4x2)
-        limit = 8;
+        // lg: 5 columns, so 15 items (5x3)
+        limit = 15;
       } else if (width >= 768) {
-        // md: 3 columns, so 6 items (3x2)
-        limit = 6;
+        // md: 4 columns, so 12 items (4x3)
+        limit = 12;
       } else if (width >= 640) {
-        // sm: 2 columns, so 4 items (2x2)
-        limit = 4;
+        // sm: 3 columns, so 9 items (3x3)
+        limit = 9;
       } else {
-        // xs: 1 column, so 3 items
-        limit = 3;
+        // xs: 2 columns, so 6 items (2x3)
+        limit = 6;
       }
     }
 
@@ -149,7 +152,7 @@ export default function CategoriesPage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold">Categories</h1>
           <p className="text-muted-foreground">
-            Manage your task and goal categories
+            Manage your task and habit categories
           </p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
@@ -200,7 +203,7 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="min-h-[400px]">
-          <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
             {categories.map((category) => (
               <CategoryCard
                 key={category.id}

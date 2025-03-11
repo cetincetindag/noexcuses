@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Fetch tasks using the clerk ID
     const tasks = await taskService.getTasksByUserId(userId);
 
-    console.log("Tasks fetched for board view:", tasks.length);
+    console.log("Tasks fetched for task view:", tasks.length);
 
     // Log a sample task for debugging if available
     if (tasks.length > 0 && tasks[0]) {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log("Returning transformed tasks for board view");
+    console.log("Returning transformed tasks for task view");
 
     if (transformedTasks.length > 0 && transformedTasks[0]) {
       const sampleTransformed = transformedTasks[0];
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(transformedTasks);
   } catch (error) {
-    console.error("Error fetching tasks for board view:", error);
+    console.error("Error fetching tasks for task view:", error);
     return NextResponse.json(
       { error: "Failed to fetch tasks" },
       { status: 500 },

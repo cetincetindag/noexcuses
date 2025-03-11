@@ -1,6 +1,6 @@
 "use client";
 
-import { Habit } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,77 +9,97 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Flame, CheckCircle2, MoreHorizontal } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Badge } from "~/components/ui/badge";
+import { Heart, MoreHorizontal, PlusCircle, CheckCircle2 } from "lucide-react";
+import { cn } from "~/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useState } from "react";
 import { toast } from "sonner";
+import { Progress } from "~/components/ui/progress";
+import { useState } from "react";
 
 interface HabitCardProps {
-  habit: Habit;
+  habit: any;
+  onHabitUpdated: () => void;
 }
 
-export function HabitCard({ habit }: HabitCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const progressPercentage = Math.min(
-    Math.round((habit.completedToday / habit.targetCompletions) * 100),
-    100,
-  );
+export function HabitCard({ habit, onHabitUpdated }: HabitCardProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleComplete = async () => {
-    if (isLoading) return;
-
-    setIsLoading(true);
     try {
+      setIsUpdating(true);
       const response = await fetch(`/api/habits/${habit.id}/complete`, {
         method: "POST",
       });
 
-      if (response.ok) {
-        // Optimistically update UI
-        // In a real app, you'd update the local state and/or refetch data
-        toast.success("Habit marked as complete!");
-
-        // Refresh the page after a short delay to show updated data
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-      } else {
-        toast.error("Failed to complete habit");
+      if (!response.ok) {
+        throw new Error("Failed to complete habit");
       }
+
+      toast.success("Habit marked as complete for today");
+      onHabitUpdated();
     } catch (error) {
-      toast.error("Error completing habit");
+      console.error("Error completing habit:", error);
+      toast.error("Failed to complete habit. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false);
     }
   };
 
+  const getCompletionPercentage = () => {
+    if (!habit.targetCompletions) return 0;
+    const percentage = (habit.completedToday / habit.targetCompletions) * 100;
+    return Math.min(percentage, 100);
+  };
+
+  const getStreakText = () => {
+    if (!habit.dailyStreak) return "Start your streak today!";
+    return `${habit.dailyStreak} day streak! 🔥`;
+  };
+
   return (
-    <Card className="flex h-full flex-col overflow-hidden transition hover:shadow-md">
-      <CardHeader className="pb-2">
+    <Card className="overflow-hidden transition-all hover:shadow-md">
+      <CardHeader
+        className="p-4 pb-2"
+        style={{
+          backgroundColor: habit.color ? `${habit.color}15` : "transparent",
+          borderBottom: habit.color ? `2px solid ${habit.color}30` : undefined,
+        }}
+      >
         <div className="flex items-start justify-between">
-          <CardTitle className="line-clamp-1 text-lg font-semibold">
-            {habit.title}
-          </CardTitle>
+          <div>
+            <CardTitle className="line-clamp-1 text-base">
+              {habit.title}
+            </CardTitle>
+            {habit.category && (
+              <Badge variant="outline" className="mt-1">
+                {habit.category.name}
+              </Badge>
+            )}
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="-mr-2 h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">More options</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleComplete}>
+                <CheckCircle2 className="mr-2 h-4 w-4" /> Complete
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <PlusCircle className="mr-2 h-4 w-4" /> Increment
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>Edit</DropdownMenuItem>
               <DropdownMenuItem className="text-destructive">
                 Delete
@@ -87,64 +107,37 @@ export function HabitCard({ habit }: HabitCardProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CardDescription className="line-clamp-2">
-          {habit.description || "No description"}
-        </CardDescription>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center text-sm">
-            <div
-              className="mr-2 h-3 w-3 rounded-full"
-              style={{ backgroundColor: habit.category.color }}
-            />
-            {habit.category.name}
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            <Flame className="h-4 w-4 text-orange-500" />
-            <span>{habit.dailyStreak} day streak</span>
-          </div>
-        </div>
+      <CardContent className="p-4 pt-2">
+        {habit.description && (
+          <CardDescription className="mb-3 line-clamp-2">
+            {habit.description}
+          </CardDescription>
+        )}
         <div className="mb-1 flex items-center justify-between text-sm">
+          <span>Progress Today</span>
           <span>
-            Progress: {habit.completedToday}/{habit.targetCompletions}
+            {habit.completedToday}/{habit.targetCompletions}
           </span>
-          <span>{progressPercentage}%</span>
         </div>
-        <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-primary h-full transition-all"
-            style={{ width: `${progressPercentage}%` }}
-          ></div>
-        </div>
+        <Progress value={getCompletionPercentage()} className="h-2" />
       </CardContent>
-      <CardFooter className="mt-auto pt-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={handleComplete}
-                disabled={
-                  isLoading || habit.completedToday >= habit.targetCompletions
-                }
-                className="w-full"
-                variant={habit.isCompletedToday ? "outline" : "default"}
-              >
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {habit.isCompletedToday
-                  ? "Completed"
-                  : habit.completedToday < habit.targetCompletions
-                    ? "Mark Complete"
-                    : "All Done!"}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {habit.isCompletedToday
-                ? "You've completed this habit for today!"
-                : "Mark this habit as complete for today"}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+      <CardFooter className="flex items-center justify-between border-t p-3">
+        <div className="text-muted-foreground text-sm">{getStreakText()}</div>
+        <Button
+          size="sm"
+          onClick={handleComplete}
+          disabled={isUpdating || habit.isCompletedToday}
+          variant={habit.isCompletedToday ? "outline" : "default"}
+        >
+          <Heart
+            className={cn(
+              "mr-1 h-4 w-4",
+              habit.isCompletedToday && "fill-current",
+            )}
+          />
+          {habit.isCompletedToday ? "Completed" : "Complete"}
+        </Button>
       </CardFooter>
     </Card>
   );

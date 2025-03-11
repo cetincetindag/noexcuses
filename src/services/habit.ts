@@ -1,49 +1,51 @@
 import { db } from "~/server/db";
-import { z } from "zod";
 import { analyticsService } from "./analytics";
-
-// Define the Habit schema for validation
-export const HabitSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().optional(),
-  userId: z.string().min(1),
-  categoryId: z.string().min(1),
-  targetCompletions: z.number().int().min(1).default(1),
-  active: z.boolean().default(true),
-  isCompletedToday: z.boolean().default(false),
-  dailyStreak: z.number().int().min(0).default(0),
-  lastCompletedAt: z.date().nullable().optional(),
-  completedToday: z.number().int().min(0).default(0),
-  color: z.string().optional(),
-});
-
-export type HabitType = z.infer<typeof HabitSchema>;
+import { HabitType, HabitSchema } from "../types/habit";
 
 class HabitService {
   /**
    * Create a new habit
-   * @param data Habit data
+   * @param data HabitType data
    * @returns Created habit
    */
   async createHabit(data: HabitType) {
     try {
-      return await db.habit.create({
+      console.log("Creating habit with data:", JSON.stringify(data, null, 2));
+
+      if (!data.userId) {
+        throw new Error("User ID is required");
+      }
+
+      // Check if the category exists
+      const categoryExists = await db.category.findUnique({
+        where: { id: data.categoryId },
+      });
+
+      if (!categoryExists) {
+        throw new Error(`Category with ID ${data.categoryId} not found`);
+      }
+
+      const habit = await db.habit.create({
         data: {
           title: data.title,
           description: data.description || "",
-          userId: data.userId,
-          categoryId: data.categoryId,
-          targetCompletions: data.targetCompletions,
-          active: data.active,
-          isCompletedToday: false,
-          dailyStreak: 0,
+          targetCompletions: data.targetCompletions || 1,
           completedToday: 0,
+          isCompletedToday: false,
+          active: data.active !== undefined ? data.active : true,
+          dailyStreak: 0,
+          longestStreak: 0,
+          categoryId: data.categoryId,
+          userId: data.userId,
+          order: data.order || 0,
           color: data.color,
         },
         include: {
           category: true,
         },
       });
+
+      return habit;
     } catch (error) {
       console.error("Failed to create habit:", error);
       throw error;
@@ -51,26 +53,31 @@ class HabitService {
   }
 
   /**
-   * Retrieve a habit by ID
+   * Get a habit by ID
    * @param id Habit ID
-   * @returns Habit with category
+   * @param userId User ID for authorization check
+   * @returns Habit if found and belongs to user
    */
-  async getHabitById(id: string) {
+  async getHabitById(id: string, userId: string) {
     try {
       return await db.habit.findUnique({
-        where: { id },
+        where: { 
+          id,
+          userId, // Add user check for security
+        },
         include: {
           category: true,
+          routines: true, // Include related routines
         },
       });
     } catch (error) {
-      console.error(`Failed to get habit with ID ${id}:`, error);
+      console.error(`Error fetching habit ${id} for user ${userId}:`, error);
       throw error;
     }
   }
 
   /**
-   * Update a habit by ID
+   * Update a habit
    * @param id Habit ID
    * @param data Updated habit data
    * @returns Updated habit
@@ -91,7 +98,7 @@ class HabitService {
   }
 
   /**
-   * Delete a habit by ID
+   * Delete a habit
    * @param id Habit ID
    * @returns Deleted habit
    */
@@ -108,21 +115,18 @@ class HabitService {
 
   /**
    * Get all habits for a user
-   * @param userId User ID (Clerk ID)
-   * @returns Array of habits with categories
+   * @param userId User's clerk ID
+   * @returns Array of habits
    */
   async getHabitsByUserId(userId: string) {
     try {
       return await db.habit.findMany({
-        where: {
-          userId,
-          active: true,
-        },
+        where: { userId },
         include: {
           category: true,
         },
         orderBy: {
-          createdAt: "desc",
+          order: "asc",
         },
       });
     } catch (error) {
@@ -132,13 +136,74 @@ class HabitService {
   }
 
   /**
-   * Complete a habit (increment completion count for the day)
+   * Get habits by category
+   * @param categoryId Category ID
+   * @param userId User ID for authorization check
+   * @returns Array of habits in the category
+   */
+  async getHabitsByCategory(categoryId: string, userId: string) {
+    try {
+      console.log(`Fetching habits for category ${categoryId} and user ${userId}`);
+      
+      return await db.habit.findMany({
+        where: {
+          categoryId,
+          userId,
+        },
+        include: {
+          category: true,
+          routines: true,
+        },
+        orderBy: {
+          order: 'asc',
+        },
+      });
+    } catch (error) {
+      console.error(`Error fetching habits for category ${categoryId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get habits that are associated with a specific routine
+   * @param routineId Routine ID
+   * @param userId User ID for authorization check
+   * @returns Array of habits in the routine
+   */
+  async getHabitsByRoutineId(routineId: string, userId: string) {
+    try {
+      console.log(`Fetching habits for routine ${routineId} and user ${userId}`);
+      
+      const routine = await db.routine.findUnique({
+        where: {
+          id: routineId,
+          userId,
+        },
+        include: {
+          habits: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
+      
+      return routine?.habits || [];
+    } catch (error) {
+      console.error(`Error fetching habits for routine ${routineId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Complete a habit (increment completion count)
    * @param id Habit ID
+   * @param userId User ID
    * @returns Updated habit
    */
   async completeHabit(id: string, userId: string) {
     try {
-      // Get the habit
+      // Get the current habit
       const habit = await db.habit.findUnique({
         where: { id, userId },
       });
@@ -147,40 +212,44 @@ class HabitService {
         throw new Error("Habit not found");
       }
 
-      const now = new Date();
-      const completedToday = habit.completedToday + 1;
-      const targetReached = completedToday >= habit.targetCompletions;
-
-      // Update lastCompletedAt regardless of target
-      let updates: any = {
-        completedToday,
-        lastCompletedAt: now,
-      };
-
-      // Only update streak and isCompletedToday if target reached
-      if (targetReached && !habit.isCompletedToday) {
-        const oneDayInMs = 24 * 60 * 60 * 1000;
-        const wasYesterday =
-          habit.lastCompletedAt &&
-          now.getTime() - habit.lastCompletedAt.getTime() < oneDayInMs * 2 &&
-          new Date(habit.lastCompletedAt).getDate() !== now.getDate();
-
-        // Increment streak if completed yesterday or starting new streak
-        updates.dailyStreak = wasYesterday ? habit.dailyStreak + 1 : 1;
-        updates.isCompletedToday = true;
+      // Check if already completed target for today
+      if (habit.completedToday >= habit.targetCompletions) {
+        return habit; // Already completed
       }
 
-      // Update the habit in the database
+      // Increment completed count
+      const newCompletedCount = habit.completedToday + 1;
+      const isCompletedToday = newCompletedCount >= habit.targetCompletions;
+
+      // Determine if we should update the streak
+      let newDailyStreak = habit.dailyStreak;
+      let newLongestStreak = habit.longestStreak;
+
+      // Only update streak if this completion reaches the target
+      if (isCompletedToday && !habit.isCompletedToday) {
+        newDailyStreak += 1;
+        if (newDailyStreak > newLongestStreak) {
+          newLongestStreak = newDailyStreak;
+        }
+      }
+
+      // Update the habit
       const updatedHabit = await db.habit.update({
         where: { id },
-        data: updates,
+        data: {
+          completedToday: newCompletedCount,
+          isCompletedToday,
+          lastCompletedAt: new Date(),
+          dailyStreak: newDailyStreak,
+          longestStreak: newLongestStreak,
+        },
         include: {
           category: true,
         },
       });
 
-      // Log this completion in analytics if target reached
-      if (targetReached && !habit.isCompletedToday) {
+      // Track completion in analytics if this is the first time reaching the target today
+      if (isCompletedToday && !habit.isCompletedToday) {
         await analyticsService.trackHabitCompletion(userId, id);
       }
 
@@ -192,65 +261,14 @@ class HabitService {
   }
 
   /**
-   * Reset completion status for a habit
-   * @param id Habit ID
-   * @returns Updated habit
-   */
-  async uncompleteHabit(id: string) {
-    try {
-      // Get the habit
-      const habit = await db.habit.findUnique({
-        where: { id },
-      });
-
-      if (!habit) {
-        throw new Error("Habit not found");
-      }
-
-      // Only allow uncompleting if completedToday > 0
-      if (habit.completedToday <= 0) {
-        throw new Error("Habit has no completions today to remove");
-      }
-
-      const completedToday = habit.completedToday - 1;
-      const targetNotReached = completedToday < habit.targetCompletions;
-
-      // Base updates - always decrement completedToday
-      let updates: any = {
-        completedToday,
-      };
-
-      // Only update streak if this causes target to no longer be reached
-      if (targetNotReached && habit.isCompletedToday) {
-        updates.isCompletedToday = false;
-        // Note: We don't decrement the streak as that would be confusing to users
-        // Just mark as not completed for today
-      }
-
-      // Update the habit in the database
-      return await db.habit.update({
-        where: { id },
-        data: updates,
-        include: {
-          category: true,
-        },
-      });
-    } catch (error) {
-      console.error(`Failed to uncomplete habit with ID ${id}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Reset daily habit completions for all users
-   * To be called by cron job at midnight
+   * Reset daily habits (called by cron job)
    */
   async resetDailyHabits() {
     try {
       // Reset all habits' daily completion status
-      await db.habit.updateMany({
+      const result = await db.habit.updateMany({
         where: {
-          active: true,
+          isCompletedToday: true,
         },
         data: {
           isCompletedToday: false,
@@ -258,7 +276,8 @@ class HabitService {
         },
       });
 
-      return { success: true, message: "All habits reset for the day" };
+      console.log(`Reset ${result.count} habits`);
+      return result;
     } catch (error) {
       console.error("Failed to reset daily habits:", error);
       throw error;
@@ -267,3 +286,5 @@ class HabitService {
 }
 
 export const habitService = new HabitService();
+// Re-export the schema for use in API routes
+export { HabitSchema };

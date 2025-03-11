@@ -25,12 +25,6 @@ export async function GET(request: NextRequest) {
             category: true,
           },
         },
-        goals: {
-          include: {
-            category: true,
-            task: true,
-          },
-        },
         categories: true,
       },
     });
@@ -75,7 +69,6 @@ export async function GET(request: NextRequest) {
       diagnostics: {
         rawTaskCount,
         tasksFromRelation: user.tasks.length,
-        goalsCount: user.goals.length,
         categoriesCount: user.categories.length,
         auth: {
           userIdFromAuth: userId,

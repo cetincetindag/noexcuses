@@ -83,13 +83,21 @@ class UserService {
           where: { userId: clerkId },
         });
 
-        // Delete goals related to this user
-        await tx.goal.deleteMany({
+        // Delete habits related to this user
+        await tx.habit.deleteMany({
           where: { userId: clerkId },
         });
 
         // Delete categories related to this user
         await tx.category.deleteMany({
+          where: { userId: clerkId },
+        });
+
+        await tx.task.deleteMany({
+          where: { userId: clerkId },
+        });
+
+        await tx.routine.deleteMany({
           where: { userId: clerkId },
         });
 
@@ -129,18 +137,6 @@ class UserService {
       });
     } catch (error) {
       console.error("Error getting tasks of user:", error);
-      throw error;
-    }
-  }
-
-  async getGoalsOfUser(clerkId: string) {
-    try {
-      return db.user.findUnique({
-        where: { clerkId },
-        select: { goals: true },
-      });
-    } catch (error) {
-      console.error("Error getting goals of user:", error);
       throw error;
     }
   }
@@ -243,3 +239,5 @@ class UserService {
 }
 
 export const userService = new UserService();
+// Re-export the schema for use in API routes
+export { UserSchema };

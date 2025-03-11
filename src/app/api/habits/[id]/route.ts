@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const habitId = params.id;
-    const habit = await habitService.getHabitById(habitId);
+    const habit = await habitService.getHabitById(habitId, userId);
 
     if (!habit) {
       return NextResponse.json({ error: "Habit not found" }, { status: 404 });
@@ -53,7 +53,7 @@ export async function PUT(
     const habitId = params.id;
 
     // Check if the habit exists and belongs to the user
-    const existingHabit = await habitService.getHabitById(habitId);
+    const existingHabit = await habitService.getHabitById(habitId, userId);
 
     if (!existingHabit) {
       return NextResponse.json({ error: "Habit not found" }, { status: 404 });
@@ -114,7 +114,7 @@ export async function DELETE(
     const habitId = params.id;
 
     // Check if the habit exists and belongs to the user
-    const existingHabit = await habitService.getHabitById(habitId);
+    const existingHabit = await habitService.getHabitById(habitId, userId);
 
     if (!existingHabit) {
       return NextResponse.json({ error: "Habit not found" }, { status: 404 });

@@ -46,7 +46,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { triggerKanbanRefresh } from "~/components/kanban/kanban-board";
 
 const categoryFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -120,8 +119,8 @@ export function CreateCategoryDialog({
         form.reset();
         setOpen(false);
 
-        // Trigger a refresh of the Kanban board
-        triggerKanbanRefresh();
+        // Refresh tasks that might be using this category
+        sessionStorage.setItem("refreshTaskData", "true");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

@@ -129,7 +129,7 @@ export async function DELETE(
       );
     }
 
-    // Check if category is in use by tasks or goals
+    // Check if category is in use by tasks, habits, or routines
     const usageInfo = await categoryService.checkCategoryInUse(id, userId);
 
     // If category is in use, prevent deletion
@@ -139,7 +139,8 @@ export async function DELETE(
           error: "Cannot delete category that is in use",
           details: {
             tasksUsingCategory: usageInfo.tasksCount,
-            goalsUsingCategory: usageInfo.goalsCount,
+            habitsUsingCategory: usageInfo.habitsCount,
+            routinesUsingCategory: usageInfo.routinesCount,
           },
         },
         { status: 400 },

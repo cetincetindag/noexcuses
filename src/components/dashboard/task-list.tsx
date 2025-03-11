@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskCard } from "~/components/kanban/task-card";
+import { TaskCard } from "~/components/dashboard/task-card";
 import type { Task } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";

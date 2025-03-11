@@ -4,13 +4,20 @@ import { cn } from "~/lib/utils";
 import {
   BarChart3,
   Briefcase,
-  Dumbbell,
-  GraduationCap,
+  Clock,
+  ListTodo,
+  Calendar,
+  User,
+  Settings,
+  Bell,
+  Sun,
+  Moon,
   Heart,
-  Home,
-  Layers,
-  NotebookIcon as Lotus,
-  Users,
+  ChevronUpCircle,
+  CheckCircle,
+  PieChart,
+  History,
+  HeartHandshake,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,17 +27,41 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { useTheme } from "next-themes";
+import { Button } from "~/components/ui/button";
 
 const sidebarItems = [
+  {
+    title: "Profile",
+    href: "/dashboard/profile",
+    icon: User,
+    subItems: [
+      {
+        title: "Account",
+        href: "/dashboard/profile/account",
+        icon: User,
+      },
+      {
+        title: "Settings",
+        href: "/dashboard/profile/settings",
+        icon: Settings,
+      },
+      {
+        title: "Notifications",
+        href: "/dashboard/profile/notifications",
+        icon: Bell,
+      },
+    ],
+  },
   {
     title: "Dashboard",
     href: "/dashboard",
     icon: BarChart3,
     subItems: [
       {
-        title: "Board View",
-        href: "/dashboard/board",
-        icon: Layers,
+        title: "Overview",
+        href: "/dashboard/overview",
+        icon: Calendar,
       },
       {
         title: "Categories",
@@ -39,10 +70,61 @@ const sidebarItems = [
       },
     ],
   },
+  {
+    title: "Tasks",
+    href: "/dashboard/tasks",
+    icon: ListTodo,
+    subItems: [
+      {
+        title: "Today",
+        href: "/dashboard/tasks/today",
+        icon: Clock,
+      },
+      {
+        title: "Upcoming",
+        href: "/dashboard/tasks/upcoming",
+        icon: ChevronUpCircle,
+      },
+      {
+        title: "Completed",
+        href: "/dashboard/tasks/completed",
+        icon: CheckCircle,
+      },
+    ],
+  },
+  {
+    title: "Habits",
+    href: "/dashboard/habits",
+    icon: Heart,
+    subItems: [
+      {
+        title: "Active",
+        href: "/dashboard/habits/active",
+        icon: Heart,
+      },
+      {
+        title: "Statistics",
+        href: "/dashboard/habits/statistics",
+        icon: PieChart,
+      },
+      {
+        title: "History",
+        href: "/dashboard/habits/history",
+        icon: History,
+      },
+    ],
+  },
+  {
+    title: "Support",
+    href: "/dashboard/donations",
+    icon: HeartHandshake,
+    subItems: [],
+  },
 ];
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   return (
     <aside className="lg:bg-background/95 lg:supports-[backdrop-filter]:bg-background/60 hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-64 lg:flex-col lg:border-r lg:pt-20 lg:backdrop-blur">
@@ -69,7 +151,7 @@ export function DashboardSidebar() {
                 </Tooltip>
               </TooltipProvider>
 
-              {item.subItems && (
+              {item.subItems && item.subItems.length > 0 && (
                 <div className="mt-1 ml-6 grid gap-1">
                   {item.subItems.map((subItem, subIndex) => (
                     <TooltipProvider key={subIndex}>
@@ -100,60 +182,29 @@ export function DashboardSidebar() {
             </div>
           ))}
         </nav>
-        <div className="mt-auto">
+
+        {/* Theme toggle at the bottom */}
+        <div className="mt-auto flex flex-col gap-2">
           <div className="bg-muted rounded-md p-3">
-            <h4 className="mb-1 text-sm font-medium">Quick Access</h4>
-            <div className="grid grid-cols-4 gap-1">
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Health"
-              >
-                <Heart className="h-4 w-4 text-[#3498DB]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Fitness"
-              >
-                <Dumbbell className="h-4 w-4 text-[#E74C3C]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Mindfulness"
-              >
-                <Lotus className="h-4 w-4 text-[#9B59B6]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Work"
-              >
-                <Briefcase className="h-4 w-4 text-[#34495E]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Home"
-              >
-                <Home className="h-4 w-4 text-[#795548]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Social"
-              >
-                <Users className="h-4 w-4 text-[#E91E63]" />
-              </Link>
-              <Link
-                href="#"
-                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-8 w-8 items-center justify-center rounded-md"
-                title="Education"
-              >
-                <GraduationCap className="h-4 w-4 text-[#F39C12]" />
-              </Link>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="flex w-full items-center justify-between"
+            >
+              <span>Theme</span>
+              <div className="flex items-center">
+                {theme === "light" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </div>
+            </Button>
+          </div>
+
+          <div className="text-muted-foreground text-center text-xs">
+            <p>noexcuses v1.0</p>
           </div>
         </div>
       </div>

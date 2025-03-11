@@ -44,10 +44,10 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { type Category } from "~/lib/utils";
-import { triggerKanbanRefresh } from "~/components/kanban/kanban-board";
+import { useUser } from "@clerk/nextjs";
 
 const categoryFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -82,7 +82,7 @@ export function EditCategoryDialog({
   });
 
   // Update form when category changes
-  useState(() => {
+  useEffect(() => {
     if (category) {
       form.reset({
         name: category.name,
@@ -90,7 +90,7 @@ export function EditCategoryDialog({
         icon: category.icon,
       });
     }
-  });
+  }, [category, form]);
 
   const icons = [
     { name: "Heart", component: Heart },
@@ -140,8 +140,8 @@ export function EditCategoryDialog({
         setOpen(false);
         onCategoryUpdated(); // Callback to refresh categories list
 
-        // Trigger a refresh of the Kanban board
-        triggerKanbanRefresh();
+        // Refresh tasks that might be using this category
+        sessionStorage.setItem("refreshTaskData", "true");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

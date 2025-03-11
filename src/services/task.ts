@@ -1,6 +1,7 @@
 import { db } from "~/server/db";
 import { Frequency } from "@prisma/client";
 import { TaskSchema, TaskType } from "../types/task";
+import { analyticsService } from "./analytics";
 
 class TaskService {
   async createTask(data: TaskType) {
@@ -94,33 +95,59 @@ class TaskService {
     }
   }
 
+  /**
+   * Get a task by ID
+   * @param taskId Task ID
+   * @param userId User ID for authorization check
+   * @returns Task if found and belongs to user
+   */
   async getTaskById(taskId: string, userId: string) {
     try {
       return await db.task.findUnique({
         where: { id: taskId, userId },
         include: {
           category: true,
+          routines: true, // Include related routines
         },
       });
     } catch (error) {
-      console.error("Failed to get task:", error);
+      console.error(`Error fetching task ${taskId}:`, error);
       throw error;
     }
   }
 
-  async updateTask(taskId: string, data: TaskType, userId: string) {
+  /**
+   * Update a task
+   * @param taskId Task ID
+   * @param data Task data to update
+   * @param userId User ID for authorization check
+   * @returns Updated task
+   */
+  async updateTask(taskId: string, data: Partial<TaskType>, userId: string) {
     try {
-      const validatedData = TaskSchema.partial().parse(data);
-      const updatedTask = await db.task.update({
-        where: { id: taskId, userId: userId },
-        data: validatedData,
+      console.log(
+        `Updating task ${taskId} for user ${userId} with data:`,
+        JSON.stringify(data, null, 2),
+      );
+
+      // Verify task belongs to user
+      const existingTask = await this.getTaskById(taskId, userId);
+      if (!existingTask) {
+        throw new Error(
+          `Task with ID ${taskId} not found or does not belong to user`,
+        );
+      }
+
+      return await db.task.update({
+        where: { id: taskId },
+        data,
         include: {
           category: true,
+          routines: true,
         },
       });
-      return updatedTask;
     } catch (error) {
-      console.error("Failed to update task:", error);
+      console.error(`Error updating task ${taskId}:`, error);
       throw error;
     }
   }
@@ -342,6 +369,64 @@ class TaskService {
       throw error;
     }
   }
+
+  /**
+   * Get tasks that are associated with a specific routine
+   * @param routineId Routine ID
+   * @param userId User ID for authorization check
+   * @returns Array of tasks in the routine
+   */
+  async getTasksByRoutineId(routineId: string, userId: string) {
+    try {
+      console.log(`Fetching tasks for routine ${routineId} and user ${userId}`);
+
+      const routine = await db.routine.findUnique({
+        where: {
+          id: routineId,
+          userId,
+        },
+        include: {
+          tasks: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
+
+      return routine?.tasks || [];
+    } catch (error) {
+      console.error(`Error fetching tasks for routine ${routineId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reset daily completion flag for all tasks
+   * Used by the cron service for daily resets
+   */
+  async resetDailyTasks() {
+    try {
+      console.log("Resetting daily completion status for all tasks");
+
+      const result = await db.task.updateMany({
+        where: {
+          isCompletedToday: true,
+        },
+        data: {
+          isCompletedToday: false,
+        },
+      });
+
+      console.log(`Reset ${result.count} tasks`);
+      return result;
+    } catch (error) {
+      console.error("Error resetting daily tasks:", error);
+      throw error;
+    }
+  }
 }
 
 export const taskService = new TaskService();
+// Re-export the schema for use in API routes
+export { TaskSchema };

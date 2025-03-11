@@ -18,6 +18,7 @@ import {
   Plus,
   User,
   X,
+  Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -42,9 +43,9 @@ const navigationItems = [
     icon: BarChart3,
     subItems: [
       {
-        title: "Board View",
-        href: "/dashboard/board",
-        icon: Layers,
+        title: "Overview",
+        href: "/overview",
+        icon: Calendar,
       },
       {
         title: "Categories",

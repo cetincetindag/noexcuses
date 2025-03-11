@@ -32,7 +32,6 @@ import { z } from "zod";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { triggerKanbanRefresh } from "~/components/kanban/kanban-board";
 import { Frequency } from "@prisma/client";
 import { CalendarIcon, CheckCircle2, Circle, Clock, Star } from "lucide-react";
 import { cn } from "~/lib/utils";
@@ -241,7 +240,6 @@ export function CreateTaskDialog({
           }
 
           onTaskCreated?.();
-          triggerKanbanRefresh();
         }
       } catch (fetchError) {
         // This catches network errors like CORS, network offline, etc.

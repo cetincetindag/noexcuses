@@ -34,7 +34,9 @@ export async function GET(
     return NextResponse.json({
       categoryId: id,
       tasksCount: usageInfo.tasksCount,
-      goalsCount: usageInfo.goalsCount,
+      habitsCount: usageInfo.habitsCount,
+      routinesCount: usageInfo.routinesCount,
+      inUse: usageInfo.inUse,
     });
   } catch (error) {
     console.error("Error fetching category stats:", error);
